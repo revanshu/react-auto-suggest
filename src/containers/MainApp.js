@@ -1,149 +1,118 @@
 import React, { Component } from "react";
-import FavouritesView from "../components/FavouritesView";
-import RecipesView from "../components/RecipesView";
-import CategoriesView from "../components/CategoriesView";
-import { withRouter } from "react-router-dom";
+import ProductsView from "../components/ProductsView";
+import productServices from "../utils/getProducts";
 
 class MainApp extends Component {
   state = {
-    categories: [],
-    recipes: [],
-    favourites: [],
-    selectedCategories: "",
-    bagCount: 0
+    products: [],
+    activeIndex: 1,
+    selectedCat: "",
+    input: ""
   };
 
-  constructor() {
-    super();
-    this.onCategorySelect = this.onCategorySelect.bind(this);
-    this.onCommoditySelect = this.onCommoditySelect.bind(this);
-  }
-
   componentDidMount() {
-    var url = `http://temp.dash.zeta.in/food.php`;
-    console.log(url);
-    fetch(url)
-      .then(response => response.json())
-      .then(json => {
-        console.log("data", json);
-        const favArray = json.recipes.filter(rec => rec.isFavourite === true);
-        console.log("data", favArray);
-        this.setState({ categories: json.categories });
-        this.setState({ recipes: json.recipes });
-        this.setState({ favourites: favArray });
-      });
+    let data = productServices.getProducts();
+    this.setState({ products: data });
+    this.data = data;
+    console.log("products list", data);
   }
 
-  onCommoditySelect(comm) {
-    this.props.history.push({
-      pathname: "/details",
-      state: { detail: comm }
+  moveLeft() {
+    const { products, activeIndex } = this.state;
+    if (activeIndex === 1) return;
+
+    for (let i = 0; i < products.length; i++) {
+      products[i].left += 200;
+    }
+
+    this.setState({ products, activeIndex: activeIndex - 1 });
+    console.log("left");
+  }
+
+  moveRight() {
+    const { products, activeIndex } = this.state;
+    if (activeIndex + 2 === products.length) return;
+    for (let i = 0; i < products.length; i++) {
+      products[i].left -= 200;
+    }
+
+    this.setState({ products, activeIndex: activeIndex + 1 });
+    console.log("right", activeIndex);
+  }
+
+  handleInputChange(e) {
+    const { products } = this.state;
+    let productsFilter = products.filter(prod => {
+      return prod.category === e.target.value;
     });
-    // this.props.history.push("/details");
+    if (productsFilter.length === 0) {
+      productsFilter = this.data;
+      for (let i = 0; i < productsFilter.length; i++) {
+        productsFilter[i].left = i * 200;
+      }
+    } else {
+      for (let i = 0; i < productsFilter.length; i++) {
+        productsFilter[i].left = i * 200;
+      }
+    }
+    this.setState({
+      input: e.target.value,
+      products: productsFilter,
+      activeIndex: 1
+    });
   }
-
-  onCategorySelect(name) {
-    console.log("selected", name);
-    this.setState({ selectedCategories: name });
-  }
-
-  addToBag() {
-    let { bagCount } = this.state;
-    this.setState({ bagCount: bagCount + 1 });
-  }
-
-  onSearch() {}
 
   render() {
-    const {
-      categories,
-      recipes,
-      favourites,
-      selectedCategories,
-      bagCount
-    } = this.state;
-    const categoriesView = categories.map(cat => (
-      <CategoriesView cat={cat} onClick={this.onCategorySelect} />
-    ));
+    const { products, input } = this.state;
+    const favView = products.map(prod => {
+      return (
+        <ProductsView
+          prod={prod}
+          onClick={this.onCommoditySelect}
+          leftVal={prod.left}
+          key={prod.index}
+        />
+      );
+    });
 
-    const favView = favourites.map(fav => (
-      <FavouritesView
-        fav={fav}
-        onClick={this.onCommoditySelect}
-        addToBag={() => {
-          this.addToBag();
-        }}
-      />
-    ));
-    const recipesSortedWithCategory = recipes.filter(
-      rec => rec.category === selectedCategories
-    );
-    console.log("sorted", recipesSortedWithCategory);
-    const recipeShow =
-      recipesSortedWithCategory.length > 0
-        ? recipesSortedWithCategory
-        : recipes;
-    const recipesView = recipeShow.map(rec => (
-      <RecipesView
-        rec={rec}
-        onClick={this.onCommoditySelect}
-        addToBag={() => {
-          this.addToBag();
-        }}
-      />
-    ));
     return (
       <div className="App">
         <div className="main-header">
-          <span>Best Food App</span>
+          <span>Dynamic Carousel</span>
         </div>
         <div className="favourites">
           <div className="favourites-header">
             <div className="favourites-subheader">
-              <span className="main-header-text">FAVOURITES</span>
-              <span className="sub-header-text">
-                Enjoy what you have been ordering!
-              </span>
-            </div>
-            <div className="bag">
-              <i
-                className="material-icons"
-                style={{ fontSize: "25px", width: "25px" }}
-              >
-                shopping
-              </i>
-              <span className="notify-badge">{bagCount}</span>
-            </div>
-          </div>
-          <div className="favourite-view">{favView}</div>
-        </div>
-        <div className="content">
-          <div className="search">
-            <div className="search-box">
+              <span className="main-header-text">Products</span>
               <input
-                className="input-box"
                 type="text"
-                placeholder="Search for recipes"
-                onChange={this.onSearch}
+                className="input-box"
+                value={this.state.input}
+                onChange={e => this.handleInputChange(e)}
               />
             </div>
-            <div className="favourites-header">
-              <div className="favourites-subheader">
-                <span className="main-header-text">SELECT CATEGORIES</span>
-              </div>
-              <div className="bag">
-                <i
-                  className="material-icons"
-                  style={{ fontSize: "25px", width: "25px" }}
-                >
-                  filter-variant
-                </i>
-              </div>
+          </div>
+          <div className="favourite-content">
+            <button
+              onClick={() => {
+                this.moveLeft();
+              }}
+            >
+              Left
+            </button>
+            <div
+              className="favourite-view transform-product"
+              id="favourites-view"
+            >
+              {favView}
             </div>
-            <div className="categories-view" id="myHeader">
-              {categoriesView}
-            </div>
-            <div className="recipes-view">{recipesView}</div>
+            <button
+              onClick={e => {
+                this.moveRight(e);
+              }}
+            >
+              Right
+            </button>
           </div>
         </div>
       </div>
@@ -151,4 +120,4 @@ class MainApp extends Component {
   }
 }
 
-export default withRouter(MainApp);
+export default MainApp;

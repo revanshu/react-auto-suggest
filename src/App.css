@@ -12,10 +12,6 @@
   width: 100%;
 }
 
-/* .sticky + .content {
-  padding-top: 102px;
-} */
-
 .main-header-text {
   font-weight: 700;
   margin-bottom: 8px;
@@ -44,7 +40,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #46c2ef;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -64,7 +60,7 @@
 }
 
 .main-header {
-  background-color: green;
+  background-color: #45aace;
   padding-top: 16px;
   padding-bottom: 16px;
   color: #fff;
@@ -76,10 +72,18 @@
   padding-right: 40px;
   margin-bottom: 20px;
 }
+.favourite-content {
+  display: flex;
+  flex-direction: row;
+}
 
 .favourite-view {
   display: flex;
-  overflow: scroll;
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  width: 72%;
 }
 
 .favourites-header {
@@ -97,49 +101,8 @@
   align-items: flex-start;
 }
 
-.categories-view {
-  display: flex;
-  overflow-x: scroll;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  background-color: #fff;
-}
-
-.categories {
-  border: 1px solid #ddd;
-  width: 100px;
-  padding: 8px;
-  display: flex;
-  justify-content: space-around;
-  margin-right: 10px;
-  cursor: pointer;
-}
-
-.category-image {
-  height: 20px;
-  width: 20px;
-}
-
-.recipes {
-  height: 250px;
-  display: flex;
-  flex-direction: column;
-  width: 250px;
-  margin: 0 auto;
-  border: 1px solid #ddd;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-.details {
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  border: 1px solid #ddd;
-  margin-bottom: 10px;
-}
-
 .favs {
+  position: absolute;
   height: 250px;
   display: flex;
   flex-direction: column;
@@ -148,6 +111,7 @@
   border: 1px solid #ddd;
   margin-right: 10px;
   cursor: pointer;
+  transition: left 1s linear;
 }
 
 .favs-image {
@@ -156,44 +120,17 @@
   background-size: cover;
 }
 
-.recipes-view {
-  height: 500px;
-  /* overflow: scroll; */
-}
-
-.bag {
-  position: relative;
-}
-
-.notify-badge {
-  position: absolute;
-  background: red;
-  height: 14px;
-  padding: 5px;
-  top: -12px;
-  right: 5px;
-  width: auto;
-  text-align: center;
-  border-radius: 50%;
-  color: white;
-  border: 1px solid red;
-}
-
-.recipes-desc {
+.order-desc {
   display: flex;
   justify-content: space-between;
   padding: 8px;
-}
-
-.recipes-button {
-  flex: 1;
 }
 
 span {
   text-align: left;
 }
 
-.recipes-subdesc {
+.order-subdesc {
   flex: 2;
   display: flex;
   flex-direction: column;
@@ -205,29 +142,29 @@ span {
   width: 250px;
 }
 
-.details-image {
-}
-
-.bag-button {
+.order-button {
   height: 40px;
   color: #fff;
-  background-color: green;
-}
-
-.ratings-category {
-  display: flex;
-  justify-content: space-between;
-  border-top: 2px solid #ddd;
-  padding-top: 20px;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-bottom: 30px;
+  background-color: #45aace;
 }
 
 .input-box {
   width: 100%;
   height: 30px;
   padding-left: 10px;
+}
+
+.transform-products {
+  -webkit-transition: all 2s ease;
+  -moz-transition: all 2s ease;
+  -o-transition: all 2s ease;
+  -ms-transition: all 2s ease;
+  transition: all 2s ease;
+}
+
+button {
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 @keyframes App-logo-spin {
