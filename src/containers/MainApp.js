@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import _ from "lodash";
+import _, { debounce } from "lodash";
 import movieServices from "../utils/getMovies";
-import Modal from "../components/Modal.js";
 import MovieRow from "../components/MovieRow.js";
 import Pills from "../components/Pills.js";
 
@@ -20,20 +19,21 @@ class MainApp extends Component {
         var context = this;
         clearTimeout(timeout);
         timeout = setTimeout(() => {
+          console.log("args", args);
           func.apply(context, args);
         }, wait);
       };
     };
 
-    // this.handleInputChangeDeb = this.debounce(this.handleInputChange);
-    this.handleInputChangeDeb = _.debounce(() => {
-      this.handleInputChange();
-    }, 1000);
-    // this.search = val => {
-    //   _.debounce(e => {
-    //     console.log("Debounced Event:", e);
-    //   }, 1000);
-    // };
+    this.getDataDeb = this.debounce(this.getData, 300);
+  }
+
+  getData(val) {
+    movieServices.getMovies(val).then(data => {
+      this.setState({
+        movieList: data.Search
+      });
+    });
   }
 
   showModal = () => {
@@ -50,18 +50,7 @@ class MainApp extends Component {
       input: e.target.value
     });
     let val = e.target.value;
-    movieServices.getMovies(val).then(data => {
-      this.setState({
-        movieList: data.Search
-      });
-    });
-
-    //  this.search();
-    // this.setState({ input: e.value }, () => {
-    //   _.debounce(e => {
-    //     console.log("Debounced Event:", e);
-    //   }, 1000);
-    // });
+    this.getDataDeb(val);
   }
 
   handleSelection = d => {
