@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import _, { debounce } from "lodash";
 import movieServices from "../utils/getMovies";
 import MovieRow from "../components/MovieRow.js";
 import Pills from "../components/Pills.js";
@@ -91,14 +90,14 @@ class MainApp extends Component {
     return (
       <div className="App">
         <div className="main-header">
-          <span>React Auto Suggest</span>
+          <span>React Auto Suggest Movies</span>
         </div>
         <div className="content">
-          <span className="main-header-text">Search Movies</span>
           <div className="selected">{selectedVal}</div>
           <input
             type="text"
             className="input-box"
+            placeholder="Search Movie Title"
             value={this.state.input}
             onChange={e => this.handleInputChange(e)}
           />
