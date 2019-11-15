@@ -1,119 +1,119 @@
 import React, { Component } from "react";
-import ProductsView from "../components/ProductsView";
-import productServices from "../utils/getProducts";
+import _ from "lodash";
+import movieServices from "../utils/getMovies";
+import Modal from "../components/Modal.js";
+import MovieRow from "../components/MovieRow.js";
+import Pills from "../components/Pills.js";
 
 class MainApp extends Component {
   state = {
-    products: [],
-    activeIndex: 1,
-    selectedCat: "",
-    input: ""
+    input: "",
+    movieList: [],
+    show: false,
+    selectedData: []
   };
 
   componentDidMount() {
-    let data = productServices.getProducts();
-    this.setState({ products: data });
-    this.data = data;
-    console.log("products list", data);
+    this.debounce = (func, wait) => {
+      var timeout;
+      return function(...args) {
+        var context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          func.apply(context, args);
+        }, wait);
+      };
+    };
+
+    // this.handleInputChangeDeb = this.debounce(this.handleInputChange);
+    this.handleInputChangeDeb = _.debounce(() => {
+      this.handleInputChange();
+    }, 1000);
+    // this.search = val => {
+    //   _.debounce(e => {
+    //     console.log("Debounced Event:", e);
+    //   }, 1000);
+    // };
   }
 
-  moveLeft() {
-    const { products, activeIndex } = this.state;
-    if (activeIndex === 1) return;
+  showModal = () => {
+    this.setState({ show: true });
+  };
 
-    for (let i = 0; i < products.length; i++) {
-      products[i].left += 200;
-    }
-
-    this.setState({ products, activeIndex: activeIndex - 1 });
-    console.log("left");
-  }
-
-  moveRight() {
-    const { products, activeIndex } = this.state;
-    if (activeIndex + 2 === products.length) return;
-    for (let i = 0; i < products.length; i++) {
-      products[i].left -= 200;
-    }
-
-    this.setState({ products, activeIndex: activeIndex + 1 });
-    console.log("right", activeIndex);
-  }
+  hideModal = () => {
+    this.setState({ show: false });
+  };
 
   handleInputChange(e) {
-    const { products } = this.state;
-    let productsFilter = products.filter(prod => {
-      return prod.category === e.target.value;
-    });
-    if (productsFilter.length === 0) {
-      productsFilter = this.data;
-      for (let i = 0; i < productsFilter.length; i++) {
-        productsFilter[i].left = i * 200;
-      }
-    } else {
-      for (let i = 0; i < productsFilter.length; i++) {
-        productsFilter[i].left = i * 200;
-      }
-    }
+    this.showModal();
     this.setState({
-      input: e.target.value,
-      products: productsFilter,
-      activeIndex: 1
+      input: e.target.value
     });
+    let val = e.target.value;
+    movieServices.getMovies(val).then(data => {
+      this.setState({
+        movieList: data.Search
+      });
+    });
+
+    //  this.search();
+    // this.setState({ input: e.value }, () => {
+    //   _.debounce(e => {
+    //     console.log("Debounced Event:", e);
+    //   }, 1000);
+    // });
   }
 
-  render() {
-    const { products, input } = this.state;
-    const favView = products.map(prod => {
-      return (
-        <ProductsView
-          prod={prod}
-          onClick={this.onCommoditySelect}
-          leftVal={prod.left}
-          key={prod.index}
-        />
-      );
-    });
+  handleSelection = d => {
+    const { selectedData } = this.state;
+    selectedData.push(d.Title);
+    this.setState({ selectedData });
+  };
 
+  handleDelete = val => {
+    let { selectedData } = this.state;
+    selectedData = selectedData.filter(a => {
+      return a !== val;
+    });
+    this.setState({ selectedData });
+  };
+
+  render() {
+    const { input, show, movieList, selectedData } = this.state;
+    const suggestions = movieList
+      ? movieList.map(a => (
+          <MovieRow
+            title={a.Title}
+            desc={a.Type}
+            handleSelection={() => {
+              this.handleSelection(a);
+            }}
+          />
+        ))
+      : [];
+    const selectedVal = selectedData.map(a => (
+      <Pills
+        value={a}
+        handleDelete={() => {
+          this.handleDelete(a);
+        }}
+      />
+    ));
     return (
       <div className="App">
         <div className="main-header">
-          <span>Dynamic Carousel</span>
+          <span>React Auto Suggest</span>
         </div>
-        <div className="favourites">
-          <div className="favourites-header">
-            <div className="favourites-subheader">
-              <span className="main-header-text">Products</span>
-              <input
-                type="text"
-                className="input-box"
-                value={this.state.input}
-                onChange={e => this.handleInputChange(e)}
-              />
-            </div>
-          </div>
-          <div className="favourite-content">
-            <button
-              onClick={() => {
-                this.moveLeft();
-              }}
-            >
-              Left
-            </button>
-            <div
-              className="favourite-view transform-product"
-              id="favourites-view"
-            >
-              {favView}
-            </div>
-            <button
-              onClick={e => {
-                this.moveRight(e);
-              }}
-            >
-              Right
-            </button>
-          </div>
+        <div className="content">
+          <span className="main-header-text">Search Movies</span>
+          <div className="selected">{selectedVal}</div>
+          <input
+            type="text"
+            className="input-box"
+            value={this.state.input}
+            onChange={e => this.handleInputChange(e)}
+          />
+          {show && <div className="suggestion">{suggestions}</div>}
         </div>
       </div>
     );
