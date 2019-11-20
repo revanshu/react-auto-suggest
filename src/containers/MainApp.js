@@ -73,6 +73,7 @@ class MainApp extends Component {
           <MovieRow
             title={a.Title}
             desc={a.Type}
+            key={a.imdbID}
             handleSelection={() => {
               this.handleSelection(a);
             }}
@@ -82,6 +83,7 @@ class MainApp extends Component {
     const selectedVal = selectedData.map(a => (
       <Pills
         value={a}
+        key={a}
         handleDelete={() => {
           this.handleDelete(a);
         }}
