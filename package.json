@@ -2,7 +2,7 @@
   "name": "autosuggest",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
+  "devDependencies": {
     "@babel/core": "7.4.3",
     "@svgr/webpack": "4.1.0",
     "@typescript-eslint/eslint-plugin": "1.6.0",
@@ -12,8 +12,9 @@
     "babel-loader": "8.0.5",
     "babel-plugin-named-asset-import": "^0.3.2",
     "babel-preset-react-app": "^9.0.0",
-    "camelcase": "^5.2.0",
-    "case-sensitive-paths-webpack-plugin": "2.2.0",
+    "case-sensitive-paths-webpack-plugin": "2.2.0"
+  },
+  "dependencies": {
     "css-loader": "2.1.1",
     "dotenv": "6.2.0",
     "dotenv-expand": "4.2.0",
@@ -134,5 +135,9 @@
     "presets": [
       "react-app"
     ]
+  },
+  "devDependencies": {
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.1"
   }
 }
